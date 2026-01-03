@@ -238,7 +238,11 @@ function resetGame() {
     // Reset del giocatore
     playerX = 50;
     player.style.left = '50px';
-    player.style.bottom = '100px';
+    
+    // Imposta il bottom corretto in base al dispositivo
+    const isMobile = window.innerWidth <= 480;
+    player.style.bottom = isMobile ? '72px' : '100px';
+    
     player.classList.remove('jumping');
     player.classList.remove('falling');
     
