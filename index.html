@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jump Around - Star Wars Runner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>Jump Around</h1>
+            <div class="score-container">
+                <div class="score">Punteggio: <span id="score">0</span></div>
+                <div class="high-score">Record: <span id="highScore">0</span></div>
+            </div>
+        </div>
+        
+        <div id="gameArea" class="game-area">
+            <div id="ground" class="ground"></div>
+            <div id="player" class="player"></div>
+        </div>
+        
+        <div class="controls">
+            <p>Premi <strong>SPAZIO</strong> o <strong>CLICK</strong> per saltare!</p>
+            <p>Premi <strong>1-6</strong> per cambiare personaggio</p>
+            <button id="startBtn" class="start-btn">Inizia Gioco</button>
+            <button id="restartBtn" class="restart-btn hidden">Riprova</button>
+        </div>
+        
+        <div id="gameOver" class="game-over hidden">
+            <h2>Game Over!</h2>
+            <p>Punteggio finale: <span id="finalScore">0</span></p>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>
