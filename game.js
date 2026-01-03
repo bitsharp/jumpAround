@@ -74,19 +74,20 @@ function startGame() {
     // Reset della posizione del giocatore
     player.style.left = playerX + 'px';
     
-    // Rimuovi ostacoli e piattaforme esistenti
+    // Rimuovi ostacoli e aculei esistenti
     document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
     document.querySelectorAll('.platform').forEach(plat => plat.remove());
     
     // Genera stelle di sfondo
     createStars();
     
-    // Inizia a generare ostacoli e piattaforme
+    // Inizia a generare ostacoli
     obstacleInterval = setInterval(() => {
-        if (Math.random() > 0.4) {
+        const random = Math.random();
+        if (random > 0.5) {
             createObstacle();
         } else {
-            createPlatform();
+            createSpike();
         }
     }, 2000);
     
@@ -152,31 +153,31 @@ function createObstacle() {
     }, speed * 1000);
 }
 
-function createPlatform() {
+function createSpike() {
     if (!gameRunning) return;
     
-    const platform = document.createElement('div');
-    platform.classList.add('platform');
+    const spike = document.createElement('div');
+    spike.classList.add('platform');
     
     // Varia velocità basata dal punteggio
     const baseSpeed = 3;
     const speedIncrease = Math.floor(score / 100) * 0.5;
     const speed = Math.max(1.5, baseSpeed - speedIncrease);
-    platform.style.animationDuration = speed + 's';
+    spike.style.animationDuration = speed + 's';
     
-    gameArea.appendChild(platform);
+    gameArea.appendChild(spike);
     
-    // Rimuovi piattaforma dopo l'animazione
+    // Rimuovi aculeo dopo l'animazione
     setTimeout(() => {
-        if (platform.parentElement) {
-            platform.remove();
+        if (spike.parentElement) {
+            spike.remove();
         }
     }, speed * 1000);
 }
 
 function checkCollisions() {
     const obstacles = document.querySelectorAll('.obstacle');
-    const platforms = document.querySelectorAll('.platform');
+    const spikes = document.querySelectorAll('.platform');
     const playerRect = player.getBoundingClientRect();
     
     // Controlla collisione con ostacoli
@@ -193,20 +194,17 @@ function checkCollisions() {
         }
     });
     
-    // Controlla contatto con piattaforme (bonus)
-    platforms.forEach(platform => {
-        const platformRect = platform.getBoundingClientRect();
+    // Controlla collisione con aculei
+    spikes.forEach(spike => {
+        const spikeRect = spike.getBoundingClientRect();
         
         if (
-            playerRect.left < platformRect.right &&
-            playerRect.right > platformRect.left &&
-            playerRect.bottom >= platformRect.top &&
-            playerRect.bottom <= platformRect.top + 20 &&
-            isJumping
+            playerRect.left < spikeRect.right &&
+            playerRect.right > spikeRect.left &&
+            playerRect.bottom > spikeRect.top &&
+            playerRect.top < spikeRect.bottom
         ) {
-            // Bonus punteggi
-            score += 10;
-            scoreElement.textContent = score;
+            endGame();
         }
     });
 }
@@ -219,7 +217,7 @@ function endGame() {
     clearInterval(scoreInterval);
     clearInterval(gameLoop);
     
-    // Rimuovi tutti gli ostacoli e piattaforme
+    // Rimuovi tutti gli ostacoli e aculei
     document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
     document.querySelectorAll('.platform').forEach(plat => plat.remove());
     
