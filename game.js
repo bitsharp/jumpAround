@@ -8,6 +8,7 @@ let gameLoop;
 let obstacleInterval;
 let scoreInterval;
 let playerX = 50;
+let jumpDistance = 130;
 
 // Elementi DOM
 const gameArea = document.getElementById('gameArea');
@@ -32,6 +33,12 @@ gameArea.addEventListener('click', () => {
     if (gameRunning) jump();
 });
 
+// Supporto touch per mobile
+gameArea.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    if (gameRunning) jump();
+}, { passive: false });
+
 function handleKeyPress(e) {
     if (e.code === 'Space' && gameRunning) {
         e.preventDefault();
@@ -54,10 +61,18 @@ function startGame() {
     
     gameRunning = true;
     score = 0;
+    playerX = 50;
     scoreElement.textContent = score;
     startBtn.classList.add('hidden');
     restartBtn.classList.add('hidden');
     gameOverDiv.classList.add('hidden');
+    
+    // Calcola la distanza di salto in base alla larghezza dello schermo
+    const gameAreaWidth = gameArea.offsetWidth;
+    jumpDistance = Math.max(100, Math.min(130, gameAreaWidth * 0.25));
+    
+    // Reset della posizione del giocatore
+    player.style.left = playerX + 'px';
     
     // Rimuovi ostacoli e piattaforme esistenti
     document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
@@ -95,10 +110,19 @@ function jump() {
     
     setTimeout(() => {
         player.classList.remove('jumping');
-        playerX = 180;
+        
+        // Il movimento è già stato fatto dal translateX nell'animazione
+        // Qui aggiorniamo solo la posizione left per il prossimo salto
+        const currentTransform = getComputedStyle(player).transform;
+        const translateX = new DOMMatrix(currentTransform).m41;
+        
+        playerX += translateX;
+        
+        // Resetta il transform e imposta la nuova posizione left
+        player.style.transform = 'none';
         player.style.left = playerX + 'px';
         isJumping = false;
-    }, 550);
+    }, 600);
 }
 
 function createObstacle() {
