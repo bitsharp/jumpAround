@@ -241,7 +241,7 @@ function resetGame() {
     
     // Imposta il bottom corretto in base al dispositivo
     const isMobile = window.innerWidth <= 480;
-    player.style.bottom = isMobile ? '72px' : '100px';
+    player.style.bottom = isMobile ? '0' : '100px';
     
     player.classList.remove('jumping');
     player.classList.remove('falling');
