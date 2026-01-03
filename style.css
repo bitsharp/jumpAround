@@ -316,22 +316,22 @@ body {
     
     @keyframes jump {
         0% {
-            bottom: 90px;
+            bottom: 72px;
             transform: translateX(0) rotate(0deg) scale(1);
         }
         25% {
-            transform: translateX(32px) rotate(-8deg) scaleY(0.95) scaleX(1.05);
+            transform: translateX(45px) rotate(-8deg) scaleY(0.95) scaleX(1.05);
         }
         50% {
-            bottom: 280px;
-            transform: translateX(60px) rotate(0deg) scale(1);
+            bottom: 200px;
+            transform: translateX(85px) rotate(0deg) scale(1);
         }
         75% {
-            transform: translateX(85px) rotate(8deg) scaleY(0.95) scaleX(1.05);
+            transform: translateX(125px) rotate(8deg) scaleY(0.95) scaleX(1.05);
         }
         100% {
-            bottom: 90px;
-            transform: translateX(120px) rotate(0deg) scale(1);
+            bottom: 72px;
+            transform: translateX(160px) rotate(0deg) scale(1);
         }
     }
     
@@ -383,7 +383,7 @@ body {
     .player {
         width: 38px;
         height: 38px;
-        bottom: 0;
+        bottom: 72px;
         left: 30px;
     }
     
