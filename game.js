@@ -360,10 +360,6 @@ function createTrap() {
             trap.remove();
         }
     }, speed * 1000);
-        if (doubleObstacle.parentElement) {
-            doubleObstacle.remove();
-        }
-    }, speed * 1000);
 }
 
 function checkCollisions() {
