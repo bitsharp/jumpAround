@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const scoreSchema = new mongoose.Schema({
     playerName: {
@@ -36,7 +36,7 @@ async function connectDB() {
     }
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     await connectDB();
 
     // CORS headers

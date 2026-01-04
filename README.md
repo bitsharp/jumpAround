@@ -1,107 +1,196 @@
 # Jump Around - Star Wars Runner Game
 
-Un gioco di salto sviluppato in HTML5, CSS3 e JavaScript con un backend serverless su Vercel.
+Un gioco di salto sviluppato in HTML5, CSS3 e JavaScript con backend serverless su Vercel.
 
 ## Setup Locale
 
 ### Prerequisiti
 - Node.js installato
 - npm installato
-- MongoDB installato localmente (opzionale)
+- MongoDB installato localmente (opzionale per test locali)
 
 ### Installazione
 
 ```bash
+# Installa dipendenze
 npm install
+
+# (Opzionale) Testa la connessione a MongoDB locale
+npm run test-db
+
+# Avvia il server locale per sviluppo
 npm start
 ```
 
-Per il gioco web, apri `index.html` nel browser o servilo con un server HTTP locale.
+Per giocare, apri `http://localhost:3000` (se usi il server) oppure servici il file `index.html` con un HTTP server.
 
-## Setup su Vercel (Serverless)
+## Setup su Vercel (Serverless) - ⭐ METODO CONSIGLIATO
 
-### Passo 1: Creare un account MongoDB Atlas
+### Passo 1: MongoDB Atlas Setup
 
 1. Vai su https://www.mongodb.com/cloud/atlas
-2. Crea un account gratuito
-3. Crea un nuovo cluster (tier gratuito M0)
-4. Vai in "Database Access" e crea un utente
-5. Vai in "Network Access" e aggiungi `0.0.0.0/0`
-6. In "Clusters" clicca "Connect" → "Drivers" e copia la connection string
+2. Crea account gratuito
+3. Crea cluster gratuito M0
+4. In "Database Access", crea un utente (salva username e password)
+5. In "Network Access", aggiungi `0.0.0.0/0`
+6. In "Clusters", clicca "Connect" → scegli "Drivers"
+7. Copia la connection string e sostituisci `<username>:<password>`
 
-Esempio:
+Esempio finale:
 ```
-mongodb+srv://username:password@cluster0.mongodb.net/jump-around?retryWrites=true&w=majority
+mongodb+srv://tuousername:tuapassword@cluster0.mongodb.net/jump-around?retryWrites=true&w=majority
 ```
 
-### Passo 2: Deployare su Vercel
+### Passo 2: Configurare Vercel
 
-1. Pusha su GitHub:
-   ```bash
-   git add .
-   git commit -m "Deploy"
-   git push origin main
-   ```
+**Opzione A: Tramite Dashboard Vercel (più semplice)**
 
-2. Vai su https://vercel.com
-3. Clicca "Add New Project"
-4. Importa il repository GitHub
-5. **Aggiungi variabili d'ambiente**:
-   - Nome: `MONGODB_URI`
-   - Valore: La tua connection string MongoDB
+1. Vai su https://vercel.com
+2. Clicca "Add New Project"
+3. Importa il repository GitHub
+4. Prima di deployare, vai a "Environment Variables"
+5. Aggiungi:
+   - **Key**: `MONGODB_URI`
+   - **Value**: La tua connection string MongoDB (da Passo 1)
 6. Clicca "Deploy"
 
-## Come funziona
+**Opzione B: Tramite CLI Vercel**
 
-- **Frontend**: HTML5 + CSS3 + JavaScript (serviti staticamente da Vercel)
-- **Backend**: Funzione serverless Vercel (`api/scores.js`)
-- **Database**: MongoDB Atlas (cloud)
+```bash
+# Installa Vercel CLI
+npm install -g vercel
 
-Il gioco salva i punteggi chiamando `/api/scores` (funzione serverless automaticamente gestita da Vercel).
+# Deploy (ti chiederà le variabili d'ambiente)
+vercel
 
-## Funzionalità
+# Successivamente, per aggiornare:
+vercel --prod
+```
 
-- ✅ Gioco di salto infinito con difficoltà progressiva
-- ✅ Ostacoli dinamici e piattaforme di boost
-- ✅ Top 10 record globali persistenti su MongoDB
+### Passo 3: Verifica il Deploy
+
+- Aspetta che Vercel finisca il deploy
+- Visita l'URL fornito da Vercel (es: https://jump-around-xyz.vercel.app)
+- Gioca e verifica che i record si salvino
+
+## Come funziona l'architettura
+
+```
+┌─────────────────────────────────────────┐
+│     Browser del Giocatore                │
+│  (HTML5 + CSS + JavaScript)              │
+│  ├─ index.html                           │
+│  ├─ style.css                            │
+│  └─ game.js                              │
+└─────────┬───────────────────────────────┘
+          │ Quando finisce la partita
+          │ Invia punteggio via fetch a /api/scores
+          ▼
+┌─────────────────────────────────────────┐
+│     Vercel Serverless Function          │
+│  (api/scores.js)                         │
+│  ├─ Riceve il punteggio                 │
+│  ├─ Si connette a MongoDB                │
+│  └─ Salva e ritorna top 10               │
+└─────────┬───────────────────────────────┘
+          │
+          ▼
+┌─────────────────────────────────────────┐
+│  MongoDB Atlas (Cloud)                   │
+│  ├─ Salva record                         │
+│  └─ Ritorna top 10                       │
+└─────────────────────────────────────────┘
+```
+
+## File Importanti
+
+```
+jumpAround/
+├── index.html          # Pagina HTML principale
+├── style.css           # Stili CSS
+├── game.js             # Logica del gioco (IMPORTANTE: relative path /api/scores)
+├── api/
+│   └── scores.js       # Funzione serverless Vercel (CommonJS)
+├── server.js           # Server Express (solo per sviluppo locale)
+├── package.json        # Dipendenze Node.js
+├── vercel.json         # Configurazione Vercel
+├── .env.local          # Variabili d'ambiente locali
+└── test-db.js          # Test connessione MongoDB
+```
+
+## Risoluzione Problemi
+
+### "I record non si salvano"
+```
+✓ Verifica che MONGODB_URI sia configurato in Vercel (Settings → Environment Variables)
+✓ Controlla la connection string: deve avere username:password
+✓ Assicurati che il Network Access di MongoDB includa 0.0.0.0/0
+✓ Prova il test locale: npm run test-db
+```
+
+### "Vercel non deploya le modifiche da GitHub"
+```
+✓ Assicurati di avere fatto push su GitHub:
+  git add .
+  git commit -m "Update"
+  git push origin main
+
+✓ Controlla che il file api/scores.js sia in GitHub (non nel .gitignore)
+
+✓ Verifica che vercel.json sia presente e valido
+
+✓ Vai su Vercel → Project Settings → Deployments
+  e verifica lo stato del build
+```
+
+### "Errore 'require is not defined' o simile"
+```
+✓ Assicurati che api/scores.js usi CommonJS (require, module.exports)
+✓ Non usare import/export (ES modules) in serverless functions
+✓ Il package.json NON deve avere "type": "module"
+```
+
+### "Connection timeout a MongoDB"
+```
+✓ La connection string deve contenere il database name:
+  mongodb+srv://user:pass@cluster.mongodb.net/jump-around
+
+✓ Network Access deve essere 0.0.0.0/0 (non specifico)
+
+✓ Verifica il database user:
+  - Deve essere creato in "Database Access"
+  - Non è l'account MongoDB Atlas, è un utente del database
+```
+
+## Come deployare gli aggiornamenti
+
+```bash
+# 1. Fai le modifiche al codice
+# 2. Testa localmente
+# 3. Commit su Git
+git add .
+git commit -m "Descrizione modifiche"
+git push origin main
+
+# Vercel deploierà automaticamente!
+# (Puoi seguire il deploy in Vercel Dashboard)
+```
+
+## Funzionalità del Gioco
+
+- ✅ Gioco di salto infinito
+- ✅ Difficoltà progressiva
+- ✅ Ostacoli e piattaforme di boost
+- ✅ **Top 10 record globali persistenti**
 - ✅ Sistema di nome giocatore
 - ✅ Supporto mobile responsivo
 - ✅ 6 personaggi selezionabili
 
 ## Controlli
 
-- **SPAZIO** o **CLICK** per saltare
-- **Tasti 1-6** per cambiare personaggio
-- **Tocco** per saltare (mobile)
-- **Pulsante 🏆** per classifica
-
-## Struttura
-
-```
-├── index.html           # HTML
-├── style.css            # CSS
-├── game.js              # Logica gioco
-├── server.js            # Server locale (opzionale)
-├── api/
-│   └── scores.js        # Funzione serverless Vercel
-├── package.json         # Dipendenze
-├── vercel.json          # Config Vercel
-└── .env.local           # Env locale
-```
-
-## Troubleshooting
-
-**I record non si salvano su Vercel:**
-- Verifica `MONGODB_URI` in Vercel → Settings → Environment Variables
-- Assicurati che il Network Access di MongoDB includa `0.0.0.0/0`
-- Controlla che la connection string abbia username e password corretti
-
-**Le modifiche da GitHub non si deployano:**
-- Assicurati che `api/scores.js` sia in GitHub
-- Fai push delle modifiche: `git push origin main`
-- Vercel deploy automaticamente quando riceve un push
-
-**Errore di connessione MongoDB:**
-- La connection string deve contenere `username:password`
-- Il database user deve essere creato in MongoDB Atlas
-- Network Access deve includere l'IP di Vercel
+| Azione | Tasti |
+|--------|-------|
+| Saltare | SPAZIO, CLICK, TOUCH |
+| Cambiar personaggio | 1-6 |
+| Visualizzare record | Pulsante 🏆 |
+| Chiudere record | Tasto ✕ |

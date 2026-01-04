@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Star Wars Runner Game",
   "main": "index.html",
-  "type": "module",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"

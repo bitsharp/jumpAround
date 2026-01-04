@@ -1,24 +1,6 @@
 {
   "buildCommand": "npm install",
-  "outputDirectory": ".",
-  "functions": {
-    "api/scores.js": {
-      "maxDuration": 60,
-      "memory": 1024
-    }
-  },
   "env": {
     "MONGODB_URI": "@mongodb_uri"
-  },
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        }
-      ]
-    }
-  ]
+  }
 }
