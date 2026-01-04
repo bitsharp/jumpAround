@@ -8,12 +8,16 @@
     <style>
         .admin-container {
             max-width: 900px;
-            margin: 50px auto;
-            padding: 30px;
+            margin: 0 auto;
+            padding: 20px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             backdrop-filter: blur(10px);
             box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         .login-screen {
@@ -85,14 +89,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
         }
 
         .admin-header h1 {
             color: white;
-            font-size: 28px;
+            font-size: 22px;
+            margin: 0;
         }
 
         .logout-btn {
@@ -112,23 +118,30 @@
         }
 
         .admin-section {
-            margin-bottom: 40px;
-            padding: 20px;
+            margin-bottom: 15px;
+            padding: 15px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+        }
+
+        .admin-section:last-child {
+            margin-bottom: 0;
+            flex: 1;
         }
 
         .admin-section h2 {
             color: #667eea;
-            margin-bottom: 20px;
-            font-size: 20px;
+            margin: 0 0 10px 0;
+            font-size: 16px;
         }
 
         .records-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 0;
+            font-size: 12px;
         }
 
         .records-table thead {
@@ -137,16 +150,18 @@
 
         .records-table th {
             color: #667eea;
-            padding: 15px;
+            padding: 8px;
             text-align: left;
             border-bottom: 2px solid #667eea;
             font-weight: bold;
+            font-size: 11px;
         }
 
         .records-table td {
             color: white;
-            padding: 15px;
+            padding: 8px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 12px;
         }
 
         .records-table tbody tr:hover {
@@ -162,19 +177,21 @@
 
         .action-buttons {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
+            margin-top: 10px;
         }
 
         .danger-btn {
-            padding: 12px 24px;
+            padding: 10px 16px;
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s;
+            font-size: 13px;
         }
 
         .danger-btn:hover {
@@ -200,29 +217,30 @@
 
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 0;
         }
 
         .stat-card {
             background: rgba(102, 126, 234, 0.1);
-            padding: 20px;
-            border-radius: 10px;
+            padding: 10px;
+            border-radius: 8px;
             border: 1px solid #667eea;
             text-align: center;
         }
 
         .stat-card h3 {
             color: #bdc3c7;
-            font-size: 14px;
-            margin-bottom: 10px;
+            font-size: 11px;
+            margin: 0 0 5px 0;
         }
 
         .stat-card .value {
             color: #667eea;
-            font-size: 32px;
+            font-size: 20px;
             font-weight: bold;
+            margin: 0;
         }
 
         .back-link {
