@@ -34,9 +34,12 @@ const playerNameInput = document.getElementById('playerNameInput');
 const startNameBtn = document.getElementById('startNameBtn');
 const topScoresContainer = document.getElementById('topScoresContainer');
 const topScoresBody = document.getElementById('topScoresBody');
+const activePlayersDisplay = document.getElementById('activePlayersDisplay');
+const gameActivePlayersCount = document.getElementById('gameActivePlayers');
 
 // Offline mode (localStorage) if server is not available
 let useOnlineDB = true;
+let activePlayersInterval = null;
 
 // Inizializza high score
 highScoreElement.textContent = highScore;
@@ -95,6 +98,16 @@ function loadGlobalHighScore() {
                     playerElement.textContent = `(${best.playerName})`;
                 }
             }
+        })
+        .catch(error => {
+            console.log('Offline mode - using local records');
+        });
+    
+    // Mostra active players se admin è loggato
+    if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+        showActivePlayersDisplay();
+    }
+}
         })
         .catch(error => {
             console.log('Offline mode - using local records');
@@ -713,7 +726,45 @@ function registerActivePlayer(action) {
     .catch(error => console.log('Active player registration error:', error));
 }
 
-// Previeni lo scroll della pagina con spazio
+// Mostra il widget dei giocatori attivi solo se admin è loggato
+function showActivePlayersDisplay() {
+    if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+        activePlayersDisplay.style.display = 'block';
+        updateActivePlayersCount();
+        
+        // Aggiorna il conteggio ogni 2 secondi
+        if (!activePlayersInterval) {
+            activePlayersInterval = setInterval(() => {
+                if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+                    updateActivePlayersCount();
+                } else {
+                    hideActivePlayersDisplay();
+                }
+            }, 2000);
+        }
+    }
+}
+
+// Nasconde il widget dei giocatori attivi
+function hideActivePlayersDisplay() {
+    activePlayersDisplay.style.display = 'none';
+    if (activePlayersInterval) {
+        clearInterval(activePlayersInterval);
+        activePlayersInterval = null;
+    }
+}
+
+// Aggiorna il conteggio dei giocatori attivi
+function updateActivePlayersCount() {
+    if (sessionStorage.getItem('adminLoggedIn') !== 'true') return;
+    
+    fetch('/api/active-players')
+        .then(response => response.json())
+        .then(data => {
+            gameActivePlayersCount.textContent = data.count || 0;
+        })
+        .catch(error => console.log('Error loading active players:', error));
+}// Previeni lo scroll della pagina con spazio
 window.addEventListener('keydown', (e) => {
     if (e.code === 'Space') {
         e.preventDefault();
