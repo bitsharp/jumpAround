@@ -15,7 +15,7 @@ let playerName = '';
 
 // Determina l'URL base del server
 const API_URL = window.location.hostname === 'localhost' 
-    ? 'http://localhost:3000' 
+    ? 'https://jump-around.vercel.app' 
     : window.location.origin;
 
 // Elementi DOM
