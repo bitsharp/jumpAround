@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Jump Around</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-screen {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .login-screen h1 {
+            color: white;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .login-form input {
+            padding: 12px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 10px rgba(118, 75, 162, 0.5);
+        }
+
+        .login-form button {
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-error {
+            color: #ff6b6b;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .admin-dashboard {
+            display: none;
+        }
+
+        .admin-dashboard.active {
+            display: block;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-header h1 {
+            color: white;
+            font-size: 28px;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .admin-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .records-table thead {
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        .records-table th {
+            color: #667eea;
+            padding: 15px;
+            text-align: left;
+            border-bottom: 2px solid #667eea;
+            font-weight: bold;
+        }
+
+        .records-table td {
+            color: white;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .records-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .empty-message {
+            color: #bdc3c7;
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .danger-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .danger-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .success-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .success-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(39, 174, 96, 0.4);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #667eea;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #bdc3c7;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            color: #667eea;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            color: #764ba2;
+        }
+
+        .confirmation-dialog {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirmation-dialog.active {
+            display: flex;
+        }
+
+        .confirmation-content {
+            background: rgba(30, 60, 114, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #667eea;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .confirmation-content h3 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .confirmation-content p {
+            color: #bdc3c7;
+            margin-bottom: 20px;
+        }
+
+        .confirmation-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .confirmation-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .confirm-delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .confirm-delete:hover {
+            background: #c0392b;
+        }
+
+        .cancel-delete {
+            background: #7f8c8d;
+            color: white;
+        }
+
+        .cancel-delete:hover {
+            background: #6c7a7d;
+        }
+
+        @media (max-width: 480px) {
+            .admin-container {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            .admin-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .records-table {
+                font-size: 14px;
+            }
+
+            .records-table th,
+            .records-table td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="login-screen" id="loginScreen">
+            <h1>🔐 Admin Panel</h1>
+            <form class="login-form" id="loginForm">
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit">Accedi</button>
+                <div class="login-error" id="loginError"></div>
+            </form>
+            <a href="index.html" class="back-link">← Torna al gioco</a>
+        </div>
+
+        <div class="admin-dashboard" id="adminDashboard">
+            <div class="admin-header">
+                <h1>📊 Admin Dashboard</h1>
+                <button class="logout-btn" id="logoutBtn">Esci</button>
+            </div>
+
+            <div class="admin-section">
+                <h2>📈 Statistiche</h2>
+                <div class="stats" id="statsContainer">
+                    <div class="stat-card">
+                        <h3>Record Totali</h3>
+                        <div class="value" id="totalRecords">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Record Più Alto</h3>
+                        <div class="value" id="highestScore">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Media Punteggi</h3>
+                        <div class="value" id="averageScore">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h2>🏆 Record Globali</h2>
+                <table class="records-table">
+                    <thead>
+                        <tr>
+                            <th>Posizione</th>
+                            <th>Giocatore</th>
+                            <th>Punteggio</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordsBody">
+                        <tr>
+                            <td colspan="4" class="empty-message">Caricamento...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="admin-section">
+                <h2>⚠️ Gestione Dati</h2>
+                <div class="action-buttons">
+                    <button class="danger-btn" id="clearRecordsBtn">🗑️ Azzerare Tutti i Record</button>
+                </div>
+            </div>
+
+            <a href="index.html" class="back-link">← Torna al gioco</a>
+        </div>
+    </div>
+
+    <div class="confirmation-dialog" id="confirmationDialog">
+        <div class="confirmation-content">
+            <h3>⚠️ Conferma Eliminazione</h3>
+            <p>Sei sicuro di voler eliminare tutti i record? Questa azione non può essere annullata!</p>
+            <div class="confirmation-buttons">
+                <button class="confirm-delete" id="confirmDeleteBtn">Sì, elimina tutto</button>
+                <button class="cancel-delete" id="cancelDeleteBtn">Annulla</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_SCORES = '/api/scores';
+        const ADMIN_USERNAME = 'admin';
+        const ADMIN_PASSWORD = 'Adm$n!';
+
+        const loginScreen = document.getElementById('loginScreen');
+        const adminDashboard = document.getElementById('adminDashboard');
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginError = document.getElementById('loginError');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const clearRecordsBtn = document.getElementById('clearRecordsBtn');
+        const confirmationDialog = document.getElementById('confirmationDialog');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const recordsBody = document.getElementById('recordsBody');
+        const totalRecordsEl = document.getElementById('totalRecords');
+        const highestScoreEl = document.getElementById('highestScore');
+        const averageScoreEl = document.getElementById('averageScore');
+
+        // Controlla se è già loggato
+        if (sessionStorage.getItem('adminLoggedIn')) {
+            showDashboard();
+        }
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+
+            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                showDashboard();
+            } else {
+                loginError.textContent = '❌ Username o password non corretti!';
+                passwordInput.value = '';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('adminLoggedIn');
+            loginScreen.style.display = 'block';
+            adminDashboard.classList.remove('active');
+            loginError.textContent = '';
+            usernameInput.value = '';
+            passwordInput.value = '';
+        });
+
+        clearRecordsBtn.addEventListener('click', () => {
+            confirmationDialog.classList.add('active');
+        });
+
+        confirmDeleteBtn.addEventListener('click', () => {
+            deleteAllRecords();
+        });
+
+        cancelDeleteBtn.addEventListener('click', () => {
+            confirmationDialog.classList.remove('active');
+        });
+
+        function showDashboard() {
+            loginScreen.style.display = 'none';
+            adminDashboard.classList.add('active');
+            loadRecords();
+        }
+
+        function loadRecords() {
+            fetch(API_SCORES)
+                .then(response => response.json())
+                .then(scores => {
+                    displayRecords(scores);
+                    updateStats(scores);
+                })
+                .catch(error => {
+                    console.error('Errore nel caricamento dei record:', error);
+                    recordsBody.innerHTML = '<tr><td colspan="4" class="empty-message">Errore nel caricamento dei dati</td></tr>';
+                });
+        }
+
+        function displayRecords(scores) {
+            if (scores.length === 0) {
+                recordsBody.innerHTML = '<tr><td colspan="4" class="empty-message">Nessun record disponibile</td></tr>';
+                return;
+            }
+
+            recordsBody.innerHTML = scores.map((score, index) => {
+                const date = new Date(score.timestamp).toLocaleDateString('it-IT');
+                return `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${score.playerName}</td>
+                        <td>${score.score}</td>
+                        <td>${date}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateStats(scores) {
+            totalRecordsEl.textContent = scores.length;
+
+            if (scores.length === 0) {
+                highestScoreEl.textContent = '0';
+                averageScoreEl.textContent = '0';
+                return;
+            }
+
+            const highest = Math.max(...scores.map(s => s.score));
+            const average = Math.round(scores.reduce((sum, s) => sum + s.score, 0) / scores.length);
+
+            highestScoreEl.textContent = highest;
+            averageScoreEl.textContent = average;
+        }
+
+        function deleteAllRecords() {
+            fetch(API_SCORES, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        confirmationDialog.classList.remove('active');
+                        loadRecords();
+                        alert('✅ Tutti i record sono stati eliminati!');
+                    } else {
+                        alert('❌ Errore nell\'eliminazione dei record');
+                    }
+                })
+                .catch(error => {
+                    console.error('Errore:', error);
+                    alert('❌ Errore nel server');
+                });
+        }
+
+        // Ricarica i dati ogni 5 secondi
+        setInterval(() => {
+            if (sessionStorage.getItem('adminLoggedIn')) {
+                loadRecords();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

@@ -509,6 +509,23 @@ body {
     width: 50px;
 }
 
+.admin-link {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 28px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 100;
+    opacity: 0.6;
+}
+
+.admin-link:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
 .hidden {
     display: none !important;
 }

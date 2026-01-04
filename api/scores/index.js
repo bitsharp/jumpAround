@@ -41,7 +41,7 @@ module.exports = async function handler(req, res) {
 
     // CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') {
@@ -86,6 +86,16 @@ module.exports = async function handler(req, res) {
         } catch (error) {
             console.error('Errore nel salvataggio del punteggio:', error);
             return res.status(500).json({ error: 'Errore nel salvataggio del punteggio' });
+        }
+    }
+
+    if (req.method === 'DELETE') {
+        try {
+            await Score.deleteMany({});
+            return res.status(200).json({ success: true, message: 'Tutti i record sono stati eliminati' });
+        } catch (error) {
+            console.error('Errore nell\'eliminazione dei record:', error);
+            return res.status(500).json({ error: 'Errore nell\'eliminazione dei record' });
         }
     }
 
