@@ -167,6 +167,13 @@ function startGame() {
             score++;
             scoreElement.textContent = score;
             
+            // Aumenta difficoltà: accelera il terreno dopo 500 punti
+            if (score > 500) {
+                ground.classList.add('speed-boost');
+            } else {
+                ground.classList.remove('speed-boost');
+            }
+            
             // Diminuisci durata del boost ogni 50 punti
             if (score % 50 === 0 && jumpBoost > 0) {
                 boostDuration = Math.max(1, boostDuration - 0.5);
