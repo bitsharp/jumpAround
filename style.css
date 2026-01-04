@@ -207,7 +207,7 @@ body {
 .obstacle {
     position: absolute;
     bottom: 100px;
-    right: -50px;
+    left: 0;
     width: 40px;
     height: 60px;
     background: linear-gradient(135deg, #2d3436 0%, #000000 100%);
@@ -218,17 +218,17 @@ body {
 
 @keyframes moveObstacle {
     0% {
-        transform: translateX(0);
+        transform: translateX(100vw);
     }
     100% {
-        transform: translateX(calc(100vw + 100px));
+        transform: translateX(-100px);
     }
 }
 
 .platform {
     position: absolute;
     bottom: 100px;
-    right: -50px;
+    left: 0;
     width: 50px;
     height: 50px;
     background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
@@ -240,7 +240,7 @@ body {
 .moving-obstacle {
     position: absolute;
     bottom: 100px;
-    right: -50px;
+    left: 0;
     width: 50px;
     background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
     animation: moveObstacle 1.3s linear forwards;
@@ -251,7 +251,7 @@ body {
 .double-obstacle {
     position: absolute;
     bottom: 100px;
-    right: -80px;
+    left: 0;
     width: 80px;
     background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
     animation: moveObstacle 1.3s linear forwards;
@@ -262,7 +262,7 @@ body {
 .trap {
     position: absolute;
     bottom: 100px;
-    right: -50px;
+    left: 0;
     width: 50px;
     background: linear-gradient(135deg, #2c3e50 0%, #1a1a1a 100%);
     animation: moveObstacle 1.3s linear forwards, trapPulse 0.4s ease-in-out infinite;
@@ -285,7 +285,7 @@ body {
 .boost-platform {
     position: absolute;
     bottom: 100px;
-    right: -50px;
+    left: 0;
     width: 60px;
     height: 20px;
     background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
