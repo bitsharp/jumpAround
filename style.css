@@ -212,16 +212,16 @@ body {
     height: 60px;
     background: linear-gradient(135deg, #2d3436 0%, #000000 100%);
     border-radius: 5px;
-    animation: moveObstacle 1.8s linear forwards;
+    animation: moveObstacle 1.3s linear forwards;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
 @keyframes moveObstacle {
     0% {
-        right: -50px;
+        transform: translateX(0);
     }
     100% {
-        right: 100%;
+        transform: translateX(calc(100vw + 100px));
     }
 }
 
@@ -233,7 +233,7 @@ body {
     height: 50px;
     background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
     clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-    animation: moveObstacle 1.8s linear forwards;
+    animation: moveObstacle 1.3s linear forwards;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
@@ -290,7 +290,7 @@ body {
     height: 20px;
     background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
     border-radius: 10px;
-    animation: moveObstacle 1.8s linear forwards;
+    animation: moveObstacle 1.3s linear forwards;
     box-shadow: 0 0 15px 3px rgba(255, 215, 0, 0.6),
                 0 5px 15px rgba(0, 0, 0, 0.3);
 }
