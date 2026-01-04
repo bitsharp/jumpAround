@@ -180,6 +180,12 @@ function startGame() {
             score++;
             scoreElement.textContent = score;
             
+            // Cambia personaggio ogni 1000 punti
+            const newCharacter = Math.floor(score / 1000) + 1;
+            if (newCharacter <= 6 && newCharacter !== currentCharacter) {
+                changeCharacter(newCharacter);
+            }
+            
             // Aumenta difficoltà: accelera il terreno dopo 500 punti
             if (score > 500) {
                 ground.classList.add('speed-boost');
