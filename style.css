@@ -672,15 +672,38 @@ body {
     
     .obstacle {
         bottom: 72px;
+        width: 32px;
+        height: 48px;
     }
     
     .platform {
         bottom: 72px;
+        height: 40px;
+        width: 40px;
     }
     
-    .obstacle {
-        width: 32px;
-        height: 48px;
+    .moving-obstacle {
+        bottom: 72px;
+        height: 40px;
+        width: 40px;
+    }
+    
+    .double-obstacle {
+        bottom: 72px;
+        height: 40px;
+        width: 64px;
+    }
+    
+    .trap {
+        bottom: 72px;
+        height: 40px;
+        width: 40px;
+    }
+    
+    .boost-platform {
+        bottom: 72px;
+        height: 16px;
+        width: 48px;
     }
     0;
             transform: translateX(0) rotate(0deg) scale(1);
