@@ -16,6 +16,13 @@
             </div>
         </div>
         
+        <div id="playerNameScreen" class="player-name-screen">
+            <h2>Benvenuto!</h2>
+            <p>Inserisci il tuo nome per iniziare:</p>
+            <input type="text" id="playerNameInput" class="player-name-input" placeholder="Il tuo nome..." maxlength="20">
+            <button id="startNameBtn" class="start-btn">Inizia Gioco</button>
+        </div>
+        
         <div id="gameArea" class="game-area">
             <div id="ground" class="ground"></div>
             <div id="player" class="player"></div>
@@ -24,14 +31,30 @@
         <div class="controls">
             <p>Premi <strong>SPAZIO</strong> o <strong>CLICK</strong> per saltare!</p>
             <p>Premi <strong>1-6</strong> per cambiare personaggio</p>
-            <button id="startBtn" class="start-btn">Inizia Gioco</button>
+            <button id="startBtn" class="start-btn hidden">Inizia Gioco</button>
             <button id="restartBtn" class="restart-btn hidden">Riprova</button>
-            <button id="resetBtn" class="reset-btn">Resetta Record</button>
+            <button id="viewRecordsBtn" class="records-btn">🏆 Visualizza Record</button>
         </div>
         
         <div id="gameOver" class="game-over hidden">
             <h2>Game Over!</h2>
+            <p>Giocatore: <span id="gameOverPlayerName">-</span></p>
             <p>Punteggio finale: <span id="finalScore">0</span></p>
+            <div id="topScoresContainer" class="top-scores-container hidden">
+                <button id="closeRecordsBtn" class="close-records-btn">✕</button>
+                <h3>🏆 TOP 10 RECORD GLOBALI 🏆</h3>
+                <table id="topScoresTable" class="top-scores-table">
+                    <thead>
+                        <tr>
+                            <th>Posizione</th>
+                            <th>Giocatore</th>
+                            <th>Punteggio</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topScoresBody">
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     

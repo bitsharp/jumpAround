@@ -11,6 +11,7 @@ let playerX = 50;
 let jumpDistance = 130;
 let jumpBoost = 0;
 let boostDuration = 0;
+let playerName = '';
 
 // Elementi DOM
 const gameArea = document.getElementById('gameArea');
@@ -18,18 +19,40 @@ const player = document.getElementById('player');
 const scoreElement = document.getElementById('score');
 const highScoreElement = document.getElementById('highScore');
 const finalScoreElement = document.getElementById('finalScore');
+const gameOverPlayerNameElement = document.getElementById('gameOverPlayerName');
 const startBtn = document.getElementById('startBtn');
 const restartBtn = document.getElementById('restartBtn');
-const resetBtn = document.getElementById('resetBtn');
+const viewRecordsBtn = document.getElementById('viewRecordsBtn');
+const closeRecordsBtn = document.getElementById('closeRecordsBtn');
 const gameOverDiv = document.getElementById('gameOver');
+const playerNameScreen = document.getElementById('playerNameScreen');
+const playerNameInput = document.getElementById('playerNameInput');
+const startNameBtn = document.getElementById('startNameBtn');
+const topScoresContainer = document.getElementById('topScoresContainer');
+const topScoresBody = document.getElementById('topScoresBody');
+
+// Modalità offline (localStorage) se il server non è disponibile
+let useOnlineDB = true;
 
 // Inizializza high score
 highScoreElement.textContent = highScore;
 
+// Carica il massimo punteggio globale all'avvio
+loadGlobalHighScore();
+
 // Eventi
 startBtn.addEventListener('click', startGame);
 restartBtn.addEventListener('click', resetGame);
-resetBtn.addEventListener('click', resetHighScore);
+viewRecordsBtn.addEventListener('click', showGlobalRecords);
+closeRecordsBtn.addEventListener('click', closeRecords);
+startNameBtn.addEventListener('click', startGameWithName);
+
+// Supporto per pressione Enter nel campo del nome
+playerNameInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        startGameWithName();
+    }
+});
 
 // Controlli tastiera e mouse
 document.addEventListener('keydown', handleKeyPress);
@@ -55,9 +78,35 @@ function handleKeyPress(e) {
     }
 }
 
+function loadGlobalHighScore() {
+    fetch('http://localhost:3000/api/scores')
+        .then(response => response.json())
+        .then(scores => {
+            if (scores.length > 0) {
+                const globalHighScore = scores[0].score;
+                highScoreElement.textContent = globalHighScore;
+            }
+        })
+        .catch(error => {
+            console.log('Modalità offline - usando record locale');
+        });
+}
+
 function changeCharacter(num) {
     currentCharacter = num;
     player.className = 'player char' + num;
+}
+
+function startGameWithName() {
+    const name = playerNameInput.value.trim();
+    if (!name) {
+        alert('Per favore inserisci il tuo nome!');
+        return;
+    }
+    
+    playerName = name;
+    playerNameScreen.classList.add('hidden');
+    startGame();
 }
 
 function startGame() {
@@ -282,17 +331,71 @@ function endGame() {
     document.querySelectorAll('.platform').forEach(plat => plat.remove());
     document.querySelectorAll('.boost-platform').forEach(boost => boost.remove());
     
-    // Aggiorna high score
+    // Aggiorna high score locale
     if (score > highScore) {
         highScore = score;
         localStorage.setItem('highScore', highScore);
         highScoreElement.textContent = highScore;
     }
     
+    // Salva il punteggio nel database centralizzato
+    saveScoreToDatabase();
+    
     // Mostra schermata game over
+    gameOverPlayerNameElement.textContent = playerName;
     finalScoreElement.textContent = score;
     gameOverDiv.classList.remove('hidden');
     restartBtn.classList.remove('hidden');
+}
+
+function saveScoreToDatabase() {
+    if (!playerName) return;
+    
+    fetch('http://localhost:3000/api/scores', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            playerName: playerName,
+            score: score
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.topScores) {
+            displayTopScores(data.topScores);
+        }
+    })
+    .catch(error => {
+        console.log('Errore nel salvataggio online, modalità offline attivata');
+        useOnlineDB = false;
+        loadLocalTopScores();
+    });
+}
+
+function displayTopScores(scores) {
+    topScoresBody.innerHTML = '';
+    
+    scores.forEach((score, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${score.playerName}</td>
+            <td>${score.score}</td>
+        `;
+        topScoresBody.appendChild(row);
+    });
+    
+    topScoresContainer.classList.remove('hidden');
+}
+
+function loadLocalTopScores() {
+    // Carica i top 10 dal localStorage in caso il server non sia disponibile
+    let scores = JSON.parse(localStorage.getItem('allScores') || '[]');
+    scores.sort((a, b) => b.score - a.score);
+    scores = scores.slice(0, 10);
+    displayTopScores(scores);
 }
 
 function resetGame() {
@@ -310,14 +413,31 @@ function resetGame() {
     player.classList.remove('jumping');
     player.classList.remove('falling');
     
-    // Nascondi game over
+    // Nascondi game over e mostra schermata del nome
     gameOverDiv.classList.add('hidden');
+    topScoresContainer.classList.add('hidden');
+    playerNameScreen.classList.remove('hidden');
+    playerNameInput.value = '';
+    playerNameInput.focus();
     
     // Rimuovi tutte le stelle
     document.querySelectorAll('.star').forEach(star => star.remove());
-    
-    // Riavvia il gioco
-    startGame();
+}
+
+function showGlobalRecords() {
+    fetch('http://localhost:3000/api/scores')
+        .then(response => response.json())
+        .then(scores => {
+            displayTopScores(scores);
+        })
+        .catch(error => {
+            console.log('Caricamento record locali');
+            loadLocalTopScores();
+        });
+}
+
+function closeRecords() {
+    topScoresContainer.classList.add('hidden');
 }
 
 function createStars() {
