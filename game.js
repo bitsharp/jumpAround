@@ -12,6 +12,7 @@ let jumpDistance = 130;
 let jumpBoost = 0;
 let boostDuration = 0;
 let playerName = '';
+let deviceType = window.innerWidth <= 480 ? 'mobile' : 'desktop';
 
 // API endpoint - usa relative path /api/scores
 const API_SCORES = '/api/scores';
@@ -84,14 +85,14 @@ function handleKeyPress(e) {
 function loadGlobalHighScore() {
     fetch(API_SCORES)
         .then(response => response.json())
-        .then(scores => {
-            if (scores.length > 0) {
-                const globalHighScore = scores[0].score;
-                const globalHighScorePlayer = scores[0].playerName;
-                highScoreElement.textContent = globalHighScore;
+        .then(data => {
+            const allScores = [...(data.mobileScores || []), ...(data.desktopScores || [])];
+            if (allScores.length > 0) {
+                const best = allScores.reduce((max, score) => score.score > max.score ? score : max);
+                highScoreElement.textContent = best.score;
                 const playerElement = document.getElementById('highScorePlayer');
                 if (playerElement) {
-                    playerElement.textContent = `(${globalHighScorePlayer})`;
+                    playerElement.textContent = `(${best.playerName})`;
                 }
             }
         })
@@ -512,7 +513,8 @@ function saveScoreToDatabase() {
         },
         body: JSON.stringify({
             playerName: playerName,
-            score: score
+            score: score,
+            deviceType: deviceType
         })
     })
     .then(response => response.json())
@@ -583,13 +585,74 @@ function resetGame() {
 function showGlobalRecords() {
     fetch(API_SCORES)
         .then(response => response.json())
-        .then(scores => {
-            displayTopScores(scores);
+        .then(data => {
+            displayGlobalLeaderboards(data);
         })
         .catch(error => {
             console.log('Loading local records');
             loadLocalTopScores();
         });
+}
+
+function displayGlobalLeaderboards(data) {
+    const mobileScores = data.mobileScores || [];
+    const desktopScores = data.desktopScores || [];
+    
+    topScoresContainer.classList.remove('hidden');
+    topScoresContainer.innerHTML = '';
+    
+    const container = document.createElement('div');
+    container.style.cssText = 'max-height: 400px; overflow-y: auto;';
+    
+    // Leaderboard Mobile
+    const mobileSection = document.createElement('div');
+    mobileSection.innerHTML = '<h4 style="color: #FF9800; margin: 15px 0 10px 0; font-size: 14px;">📱 MOBILE</h4>';
+    const mobileTable = createLeaderboardTable(mobileScores);
+    mobileSection.appendChild(mobileTable);
+    container.appendChild(mobileSection);
+    
+    // Leaderboard Desktop
+    const desktopSection = document.createElement('div');
+    desktopSection.innerHTML = '<h4 style="color: #2196F3; margin: 15px 0 10px 0; font-size: 14px;">💻 DESKTOP/TABLET</h4>';
+    const desktopTable = createLeaderboardTable(desktopScores);
+    desktopSection.appendChild(desktopTable);
+    container.appendChild(desktopSection);
+    
+    const button = document.createElement('button');
+    button.id = 'closeRecordsBtn';
+    button.className = 'close-records-btn';
+    button.textContent = '✕';
+    button.onclick = closeRecords;
+    
+    topScoresContainer.appendChild(button);
+    topScoresContainer.appendChild(container);
+}
+
+function createLeaderboardTable(scores) {
+    if (scores.length === 0) {
+        const empty = document.createElement('p');
+        empty.style.cssText = 'color: #bdc3c7; text-align: center; padding: 10px; font-size: 12px;';
+        empty.textContent = 'No records';
+        return empty;
+    }
+    
+    const table = document.createElement('table');
+    table.className = 'top-scores-table';
+    table.innerHTML = '<thead><tr><th style="width: 30px;">Pos</th><th>Player</th><th>Score</th></tr></thead>';
+    const tbody = document.createElement('tbody');
+    
+    scores.forEach((score, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${score.playerName}</td>
+            <td>${score.score}</td>
+        `;
+        tbody.appendChild(row);
+    });
+    
+    table.appendChild(tbody);
+    return table;
 }
 
 function closeRecords() {

@@ -345,6 +345,29 @@
             background: #6c7a7d;
         }
 
+        .tab-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+
+        .tab-btn:hover {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+
         @media (max-width: 480px) {
             .admin-container {
                 margin: 20px;
@@ -630,7 +653,11 @@
 
             <div class="admin-section">
                 <h2>🏆 Global Records</h2>
-                <table class="records-table">
+                <div style="margin-bottom: 15px; border-bottom: 2px solid rgba(255, 255, 255, 0.1); padding-bottom: 10px;">
+                    <button class="tab-btn active" onclick="switchTab('mobile')" style="margin-right: 10px;">📱 Mobile</button>
+                    <button class="tab-btn" onclick="switchTab('desktop')">💻 Desktop/Tablet</button>
+                </div>
+                <table class="records-table" id="mobileRecordsTable" style="display: block;">
                     <thead>
                         <tr>
                             <th>Position</th>
@@ -640,9 +667,25 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody id="recordsBody">
+                    <tbody id="mobileRecordsBody">
                         <tr>
-                            <td colspan="4" class="empty-message">Loading...</td>
+                            <td colspan="5" class="empty-message">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="records-table" id="desktopRecordsTable" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Position</th>
+                            <th>Player</th>
+                            <th>Score</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="desktopRecordsBody">
+                        <tr>
+                            <td colspan="5" class="empty-message">Loading...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -696,6 +739,16 @@
             showDashboard();
         }
 
+        function switchTab(tab) {
+            document.getElementById('mobileRecordsTable').style.display = tab === 'mobile' ? 'table' : 'none';
+            document.getElementById('desktopRecordsTable').style.display = tab === 'desktop' ? 'table' : 'none';
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const username = usernameInput.value;
@@ -740,17 +793,22 @@
         function loadRecords() {
             fetch(API_SCORES)
                 .then(response => response.json())
-                .then(scores => {
-                    displayRecords(scores);
-                    updateStats(scores);
+                .then(data => {
+                    displayRecords(data.mobileScores || [], 'mobile');
+                    displayRecords(data.desktopScores || [], 'desktop');
+                    updateStats(data);
                 })
                 .catch(error => {
                     console.error('Error loading records:', error);
-                    recordsBody.innerHTML = '<tr><td colspan="4" class="empty-message">Error loading data</td></tr>';
+                    document.getElementById('mobileRecordsBody').innerHTML = '<tr><td colspan="5" class="empty-message">Error loading data</td></tr>';
+                    document.getElementById('desktopRecordsBody').innerHTML = '<tr><td colspan="5" class="empty-message">Error loading data</td></tr>';
                 });
         }
 
-        function displayRecords(scores) {
+        function displayRecords(scores, deviceType) {
+            const bodyId = deviceType === 'mobile' ? 'mobileRecordsBody' : 'desktopRecordsBody';
+            const recordsBody = document.getElementById(bodyId);
+            
             if (scores.length === 0) {
                 recordsBody.innerHTML = '<tr><td colspan="5" class="empty-message">No records available</td></tr>';
                 return;
@@ -771,17 +829,18 @@
             }).join('');
         }
 
-        function updateStats(scores) {
-            totalRecordsEl.textContent = scores.length;
+        function updateStats(data) {
+            const allScores = [...(data.mobileScores || []), ...(data.desktopScores || [])];
+            totalRecordsEl.textContent = allScores.length;
 
-            if (scores.length === 0) {
+            if (allScores.length === 0) {
                 highestScoreEl.textContent = '0';
                 averageScoreEl.textContent = '0';
                 return;
             }
 
-            const highest = Math.max(...scores.map(s => s.score));
-            const average = Math.round(scores.reduce((sum, s) => sum + s.score, 0) / scores.length);
+            const highest = Math.max(...allScores.map(s => s.score));
+            const average = Math.round(allScores.reduce((sum, s) => sum + s.score, 0) / allScores.length);
 
             highestScoreEl.textContent = highest;
             averageScoreEl.textContent = average;

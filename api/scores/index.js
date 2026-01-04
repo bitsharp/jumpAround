@@ -10,6 +10,11 @@ const scoreSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    deviceType: {
+        type: String,
+        enum: ['mobile', 'desktop'],
+        default: 'desktop'
+    },
     timestamp: {
         type: Date,
         default: Date.now
@@ -50,11 +55,15 @@ module.exports = async function handler(req, res) {
 
     if (req.method === 'GET') {
         try {
-            const scores = await Score.find()
+            const mobileScores = await Score.find({ deviceType: 'mobile' })
                 .sort({ score: -1 })
                 .limit(10)
                 .lean();
-            return res.status(200).json(scores);
+            const desktopScores = await Score.find({ deviceType: 'desktop' })
+                .sort({ score: -1 })
+                .limit(10)
+                .lean();
+            return res.status(200).json({ mobileScores, desktopScores });
         } catch (error) {
             console.error('Error retrieving scores:', error);
             return res.status(500).json({ error: 'Error retrieving scores' });
@@ -63,7 +72,7 @@ module.exports = async function handler(req, res) {
 
     if (req.method === 'POST') {
         try {
-            const { playerName, score } = req.body;
+            const { playerName, score, deviceType } = req.body;
 
             if (!playerName || score === undefined) {
                 return res.status(400).json({ error: 'Name and score are required' });
@@ -72,17 +81,22 @@ module.exports = async function handler(req, res) {
             const newScore = new Score({
                 playerName: playerName.substring(0, 20),
                 score: parseInt(score),
+                deviceType: deviceType || 'desktop',
                 timestamp: new Date()
             });
 
             await newScore.save();
 
-            const topScores = await Score.find()
+            const mobileScores = await Score.find({ deviceType: 'mobile' })
+                .sort({ score: -1 })
+                .limit(10)
+                .lean();
+            const desktopScores = await Score.find({ deviceType: 'desktop' })
                 .sort({ score: -1 })
                 .limit(10)
                 .lean();
 
-            return res.status(200).json({ success: true, topScores });
+            return res.status(200).json({ success: true, mobileScores, desktopScores });
         } catch (error) {
             console.error('Error saving score:', error);
             return res.status(500).json({ error: 'Error saving score' });
