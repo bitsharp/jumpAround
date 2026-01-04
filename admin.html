@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -577,73 +577,73 @@
             <form class="login-form" id="loginForm">
                 <input type="text" id="username" placeholder="Username" required>
                 <input type="password" id="password" placeholder="Password" required>
-                <button type="submit">Accedi</button>
+                <button type="submit">Login</button>
                 <div class="login-error" id="loginError"></div>
             </form>
-            <a href="index.html" class="back-link">← Torna al gioco</a>
+            <a href="index.html" class="back-link">← Back to Game</a>
         </div>
 
         <div class="admin-dashboard" id="adminDashboard">
             <div class="admin-header">
                 <h1>📊 Admin Dashboard</h1>
-                <button class="logout-btn" id="logoutBtn">Esci</button>
+                <button class="logout-btn" id="logoutBtn">Logout</button>
             </div>
 
             <div class="admin-section">
-                <h2>📈 Statistiche</h2>
+                <h2>📈 Statistics</h2>
                 <div class="stats" id="statsContainer">
                     <div class="stat-card">
-                        <h3>Record Totali</h3>
+                        <h3>Total Records</h3>
                         <div class="value" id="totalRecords">0</div>
                     </div>
                     <div class="stat-card">
-                        <h3>Record Più Alto</h3>
+                        <h3>Highest Score</h3>
                         <div class="value" id="highestScore">0</div>
                     </div>
                     <div class="stat-card">
-                        <h3>Media Punteggi</h3>
+                        <h3>Average Score</h3>
                         <div class="value" id="averageScore">0</div>
                     </div>
                 </div>
             </div>
 
             <div class="admin-section">
-                <h2>🏆 Record Globali</h2>
+                <h2>🏆 Global Records</h2>
                 <table class="records-table">
                     <thead>
                         <tr>
-                            <th>Posizione</th>
-                            <th>Giocatore</th>
-                            <th>Punteggio</th>
-                            <th>Data</th>
+                            <th>Position</th>
+                            <th>Player</th>
+                            <th>Score</th>
+                            <th>Date</th>
                         </tr>
                     </thead>
                     <tbody id="recordsBody">
                         <tr>
-                            <td colspan="4" class="empty-message">Caricamento...</td>
+                            <td colspan="4" class="empty-message">Loading...</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
             <div class="admin-section">
-                <h2>⚠️ Gestione Dati</h2>
+                <h2>⚠️ Data Management</h2>
                 <div class="action-buttons">
-                    <button class="danger-btn" id="clearRecordsBtn">🗑️ Azzerare Tutti i Record</button>
+                    <button class="danger-btn" id="clearRecordsBtn">🗑️ Clear All Records</button>
                 </div>
             </div>
 
-            <a href="index.html" class="back-link">← Torna al gioco</a>
+            <a href="index.html" class="back-link">← Back to Game</a>
         </div>
     </div>
 
     <div class="confirmation-dialog" id="confirmationDialog">
         <div class="confirmation-content">
-            <h3>⚠️ Conferma Eliminazione</h3>
-            <p>Sei sicuro di voler eliminare tutti i record? Questa azione non può essere annullata!</p>
+            <h3>⚠️ Confirm Deletion</h3>
+            <p>Are you sure you want to delete all records? This action cannot be undone!</p>
             <div class="confirmation-buttons">
-                <button class="confirm-delete" id="confirmDeleteBtn">Sì, elimina tutto</button>
-                <button class="cancel-delete" id="cancelDeleteBtn">Annulla</button>
+                <button class="confirm-delete" id="confirmDeleteBtn">Yes, delete all</button>
+                <button class="cancel-delete" id="cancelDeleteBtn">Cancel</button>
             </div>
         </div>
     </div>
@@ -723,25 +723,25 @@
                     updateStats(scores);
                 })
                 .catch(error => {
-                    console.error('Errore nel caricamento dei record:', error);
-                    recordsBody.innerHTML = '<tr><td colspan="4" class="empty-message">Errore nel caricamento dei dati</td></tr>';
+                    console.error('Error loading records:', error);
+                    recordsBody.innerHTML = '<tr><td colspan="4" class="empty-message">Error loading data</td></tr>';
                 });
         }
 
         function displayRecords(scores) {
             if (scores.length === 0) {
-                recordsBody.innerHTML = '<tr><td colspan="4" class="empty-message">Nessun record disponibile</td></tr>';
+                recordsBody.innerHTML = '<tr><td colspan="4" class="empty-message">No records available</td></tr>';
                 return;
             }
 
             recordsBody.innerHTML = scores.map((score, index) => {
-                const date = new Date(score.timestamp).toLocaleDateString('it-IT');
+                const date = new Date(score.timestamp).toLocaleDateString('en-US');
                 return `
                     <tr>
-                        <td data-label="Posizione">${index + 1}</td>
-                        <td data-label="Giocatore">${score.playerName}</td>
-                        <td data-label="Punteggio">${score.score}</td>
-                        <td data-label="Data">${date}</td>
+                        <td data-label="Position">${index + 1}</td>
+                        <td data-label="Player">${score.playerName}</td>
+                        <td data-label="Score">${score.score}</td>
+                        <td data-label="Date">${date}</td>
                     </tr>
                 `;
             }).join('');
@@ -775,18 +775,18 @@
                     if (data.success) {
                         confirmationDialog.classList.remove('active');
                         loadRecords();
-                        alert('✅ Tutti i record sono stati eliminati!');
+                        alert('✅ All records have been deleted!');
                     } else {
-                        alert('❌ Errore nell\'eliminazione dei record');
+                        alert('❌ Error deleting records');
                     }
                 })
                 .catch(error => {
-                    console.error('Errore:', error);
-                    alert('❌ Errore nel server');
+                    console.error('Error:', error);
+                    alert('❌ Server error');
                 });
         }
 
-        // Ricarica i dati ogni 5 secondi
+        // Reload data every 5 seconds
         setInterval(() => {
             if (sessionStorage.getItem('adminLoggedIn')) {
                 loadRecords();

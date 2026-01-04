@@ -30,9 +30,9 @@ async function connectDB() {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
-        console.log('Connessione a MongoDB stabilita');
+        console.log('MongoDB connection established');
     } catch (error) {
-        console.error('Errore di connessione a MongoDB:', error.message);
+        console.error('Error connecting to MongoDB:', error.message);
     }
 }
 
@@ -56,8 +56,8 @@ module.exports = async function handler(req, res) {
                 .lean();
             return res.status(200).json(scores);
         } catch (error) {
-            console.error('Errore nel recupero dei punteggi:', error);
-            return res.status(500).json({ error: 'Errore nel recupero dei punteggi' });
+            console.error('Error retrieving scores:', error);
+            return res.status(500).json({ error: 'Error retrieving scores' });
         }
     }
 
@@ -66,7 +66,7 @@ module.exports = async function handler(req, res) {
             const { playerName, score } = req.body;
 
             if (!playerName || score === undefined) {
-                return res.status(400).json({ error: 'Nome e punteggio richiesti' });
+                return res.status(400).json({ error: 'Name and score are required' });
             }
 
             const newScore = new Score({
@@ -84,20 +84,20 @@ module.exports = async function handler(req, res) {
 
             return res.status(200).json({ success: true, topScores });
         } catch (error) {
-            console.error('Errore nel salvataggio del punteggio:', error);
-            return res.status(500).json({ error: 'Errore nel salvataggio del punteggio' });
+            console.error('Error saving score:', error);
+            return res.status(500).json({ error: 'Error saving score' });
         }
     }
 
     if (req.method === 'DELETE') {
         try {
             await Score.deleteMany({});
-            return res.status(200).json({ success: true, message: 'Tutti i record sono stati eliminati' });
+            return res.status(200).json({ success: true, message: 'All records have been deleted' });
         } catch (error) {
-            console.error('Errore nell\'eliminazione dei record:', error);
-            return res.status(500).json({ error: 'Errore nell\'eliminazione dei record' });
+            console.error('Error deleting records:', error);
+            return res.status(500).json({ error: 'Error deleting records' });
         }
     }
 
-    return res.status(405).json({ error: 'Metodo non consentito' });
+    return res.status(405).json({ error: 'Method not allowed' });
 };

@@ -34,7 +34,7 @@ const startNameBtn = document.getElementById('startNameBtn');
 const topScoresContainer = document.getElementById('topScoresContainer');
 const topScoresBody = document.getElementById('topScoresBody');
 
-// Modalità offline (localStorage) se il server non è disponibile
+// Offline mode (localStorage) if server is not available
 let useOnlineDB = true;
 
 // Inizializza high score
@@ -96,7 +96,7 @@ function loadGlobalHighScore() {
             }
         })
         .catch(error => {
-            console.log('Modalità offline - usando record locale');
+            console.log('Offline mode - using local records');
         });
 }
 
@@ -108,7 +108,7 @@ function changeCharacter(num) {
 function startGameWithName() {
     const name = playerNameInput.value.trim();
     if (!name) {
-        alert('Per favore inserisci il tuo nome!');
+        alert('Please enter your name!');
         return;
     }
     
@@ -524,7 +524,7 @@ function saveScoreToDatabase() {
         loadGlobalHighScore();
     })
     .catch(error => {
-        console.log('Errore nel salvataggio online, modalità offline attivata');
+        console.log('Error saving online, offline mode activated');
         useOnlineDB = false;
         loadLocalTopScores();
     });
@@ -587,7 +587,7 @@ function showGlobalRecords() {
             displayTopScores(scores);
         })
         .catch(error => {
-            console.log('Caricamento record locali');
+            console.log('Loading local records');
             loadLocalTopScores();
         });
 }
@@ -615,7 +615,7 @@ function resetHighScore() {
         highScore = 0;
         localStorage.setItem('highScore', 0);
         highScoreElement.textContent = 0;
-        alert('Record resettato!');
+        alert('Record reset!');
     }
 }
 
