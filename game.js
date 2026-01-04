@@ -87,7 +87,12 @@ function loadGlobalHighScore() {
         .then(scores => {
             if (scores.length > 0) {
                 const globalHighScore = scores[0].score;
+                const globalHighScorePlayer = scores[0].playerName;
                 highScoreElement.textContent = globalHighScore;
+                const playerElement = document.getElementById('highScorePlayer');
+                if (playerElement) {
+                    playerElement.textContent = `(${globalHighScorePlayer})`;
+                }
             }
         })
         .catch(error => {
