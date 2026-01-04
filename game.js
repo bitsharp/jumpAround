@@ -374,6 +374,8 @@ function saveScoreToDatabase() {
         if (data.topScores) {
             displayTopScores(data.topScores);
         }
+        // Aggiorna il record globale nella schermata principale
+        loadGlobalHighScore();
     })
     .catch(error => {
         console.log('Errore nel salvataggio online, modalità offline attivata');
