@@ -148,12 +148,16 @@ function startGame() {
     obstacleInterval = setInterval(() => {
         const random = Math.random();
         const spawnBoost = Math.random();
+        const spawnTrap = Math.random();
         
         // Aumenta probabilità di spawn con il punteggio
         const boostChance = Math.min(0.15, score / 500);
+        const trapChance = Math.min(0.1, score / 600);
         
         if (spawnBoost < boostChance) {
             createBoostPlatform();
+        } else if (spawnTrap < trapChance) {
+            createTrap();
         } else if (random > 0.7) {
             createObstacle();
         } else if (random > 0.4) {
@@ -332,12 +336,43 @@ function createDoubleObstacle() {
     }, speed * 1000);
 }
 
+function createTrap() {
+    if (!gameRunning) return;
+    
+    const trap = document.createElement('div');
+    trap.classList.add('trap');
+    
+    // Altezza della trappola
+    const trapHeight = 50 + Math.floor(score / 200) * 8;
+    trap.style.height = trapHeight + 'px';
+    
+    // Velocità dinamica basata sul punteggio
+    const baseSpeed = 1.3;
+    const speedIncrease = Math.floor(score / 100) * 0.2;
+    const speed = Math.max(1.0, baseSpeed - speedIncrease);
+    trap.style.animationDuration = speed + 's';
+    
+    gameArea.appendChild(trap);
+    
+    // Rimuovi trappola dopo l'animazione
+    setTimeout(() => {
+        if (trap.parentElement) {
+            trap.remove();
+        }
+    }, speed * 1000);
+        if (doubleObstacle.parentElement) {
+            doubleObstacle.remove();
+        }
+    }, speed * 1000);
+}
+
 function checkCollisions() {
     const obstacles = document.querySelectorAll('.obstacle');
     const spikes = document.querySelectorAll('.platform');
     const boostPlatforms = document.querySelectorAll('.boost-platform');
     const movingObstacles = document.querySelectorAll('.moving-obstacle');
     const doubleObstacles = document.querySelectorAll('.double-obstacle');
+    const traps = document.querySelectorAll('.trap');
     const playerRect = player.getBoundingClientRect();
     
     // Controlla collisione con ostacoli
@@ -405,6 +440,20 @@ function checkCollisions() {
             playerRect.right > obstacleRect.left &&
             playerRect.bottom > obstacleRect.top &&
             playerRect.top < obstacleRect.bottom
+        ) {
+            endGame();
+        }
+    });
+    
+    // Controlla collisione con trappole
+    traps.forEach(trap => {
+        const trapRect = trap.getBoundingClientRect();
+        
+        if (
+            playerRect.left < trapRect.right &&
+            playerRect.right > trapRect.left &&
+            playerRect.bottom > trapRect.top &&
+            playerRect.top < trapRect.bottom
         ) {
             endGame();
         }
