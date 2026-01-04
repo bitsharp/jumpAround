@@ -1,36 +1,62 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
+const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const scoresFile = path.join(__dirname, 'scores.json');
+
+// Connessione a MongoDB
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/jump-around';
+
+mongoose.connect(MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+}).then(() => {
+    console.log('Connessione a MongoDB stabilita');
+}).catch(err => {
+    console.log('Errore di connessione a MongoDB:', err.message);
+    console.log('La app continuerà in modalità offline');
+});
+
+// Schema del punteggio
+const scoreSchema = new mongoose.Schema({
+    playerName: {
+        type: String,
+        required: true,
+        maxlength: 20
+    },
+    score: {
+        type: Number,
+        required: true
+    },
+    timestamp: {
+        type: Date,
+        default: Date.now
+    }
+});
+
+const Score = mongoose.model('Score', scoreSchema);
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// Inizializza file scores se non esiste
-if (!fs.existsSync(scoresFile)) {
-    fs.writeFileSync(scoresFile, JSON.stringify([]));
-}
-
 // Ottieni top 10 punteggi
-app.get('/api/scores', (req, res) => {
+app.get('/api/scores', async (req, res) => {
     try {
-        const scores = JSON.parse(fs.readFileSync(scoresFile, 'utf8'));
-        const topScores = scores
-            .sort((a, b) => b.score - a.score)
-            .slice(0, 10);
-        res.json(topScores);
+        const scores = await Score.find()
+            .sort({ score: -1 })
+            .limit(10)
+            .lean();
+        res.json(scores);
     } catch (error) {
+        console.error('Errore nel recupero dei punteggi:', error);
         res.status(500).json({ error: 'Errore nel recupero dei punteggi' });
     }
 });
 
 // Salva nuovo punteggio
-app.post('/api/scores', (req, res) => {
+app.post('/api/scores', async (req, res) => {
     try {
         const { playerName, score } = req.body;
         
@@ -38,25 +64,25 @@ app.post('/api/scores', (req, res) => {
             return res.status(400).json({ error: 'Nome e punteggio richiesti' });
         }
         
-        let scores = JSON.parse(fs.readFileSync(scoresFile, 'utf8'));
-        
-        // Aggiungi nuovo punteggio
-        scores.push({
+        // Crea nuovo punteggio
+        const newScore = new Score({
             playerName: playerName.substring(0, 20),
             score: parseInt(score),
-            timestamp: new Date().toISOString()
+            timestamp: new Date()
         });
         
-        // Salva il file
-        fs.writeFileSync(scoresFile, JSON.stringify(scores, null, 2));
+        // Salva nel database
+        await newScore.save();
         
         // Ritorna top 10 aggiornato
-        const topScores = scores
-            .sort((a, b) => b.score - a.score)
-            .slice(0, 10);
+        const topScores = await Score.find()
+            .sort({ score: -1 })
+            .limit(10)
+            .lean();
         
         res.json({ success: true, topScores });
     } catch (error) {
+        console.error('Errore nel salvataggio del punteggio:', error);
         res.status(500).json({ error: 'Errore nel salvataggio del punteggio' });
     }
 });

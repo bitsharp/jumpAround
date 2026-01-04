@@ -13,6 +13,11 @@ let jumpBoost = 0;
 let boostDuration = 0;
 let playerName = '';
 
+// Determina l'URL base del server
+const API_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3000' 
+    : window.location.origin;
+
 // Elementi DOM
 const gameArea = document.getElementById('gameArea');
 const player = document.getElementById('player');
@@ -79,7 +84,7 @@ function handleKeyPress(e) {
 }
 
 function loadGlobalHighScore() {
-    fetch('http://localhost:3000/api/scores')
+    fetch(`${API_URL}/api/scores`)
         .then(response => response.json())
         .then(scores => {
             if (scores.length > 0) {
@@ -351,7 +356,7 @@ function endGame() {
 function saveScoreToDatabase() {
     if (!playerName) return;
     
-    fetch('http://localhost:3000/api/scores', {
+    fetch(`${API_URL}/api/scores`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -425,7 +430,7 @@ function resetGame() {
 }
 
 function showGlobalRecords() {
-    fetch('http://localhost:3000/api/scores')
+    fetch(`${API_URL}/api/scores`)
         .then(response => response.json())
         .then(scores => {
             displayTopScores(scores);
