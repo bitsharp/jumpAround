@@ -203,8 +203,10 @@ function createObstacle() {
     const obstacle = document.createElement('div');
     obstacle.classList.add('obstacle');
     
-    // Varia altezza degli ostacoli
-    const heights = [40, 60, 80];
+    // Altezza degli ostacoli aumenta con il punteggio
+    const baseHeights = [40, 60, 80];
+    const heightIncrease = Math.floor(score / 200) * 10;
+    const heights = baseHeights.map(h => h + heightIncrease);
     const randomHeight = heights[Math.floor(Math.random() * heights.length)];
     obstacle.style.height = randomHeight + 'px';
     
