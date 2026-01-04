@@ -154,10 +154,14 @@ function startGame() {
         
         if (spawnBoost < boostChance) {
             createBoostPlatform();
-        } else if (random > 0.5) {
+        } else if (random > 0.7) {
             createObstacle();
-        } else {
+        } else if (random > 0.4) {
             createSpike();
+        } else if (random > 0.2) {
+            createMovingObstacle();
+        } else {
+            createDoubleObstacle();
         }
     }, 2000);
     
@@ -270,10 +274,70 @@ function createBoostPlatform() {
     }, speed * 1000);
 }
 
+function createMovingObstacle() {
+    if (!gameRunning) return;
+    
+    const movingObstacle = document.createElement('div');
+    movingObstacle.classList.add('moving-obstacle');
+    
+    // Altezza aumenta con il punteggio
+    const baseHeights = [30, 50, 70];
+    const heightIncrease = Math.floor(score / 200) * 8;
+    const heights = baseHeights.map(h => h + heightIncrease);
+    const randomHeight = heights[Math.floor(Math.random() * heights.length)];
+    movingObstacle.style.height = randomHeight + 'px';
+    
+    // Velocità dinamica basata sul punteggio
+    const baseSpeed = 1.3;
+    const speedIncrease = Math.floor(score / 100) * 0.2;
+    const speed = Math.max(1.0, baseSpeed - speedIncrease);
+    movingObstacle.style.animationDuration = speed + 's';
+    
+    gameArea.appendChild(movingObstacle);
+    
+    // Rimuovi ostacolo dopo l'animazione
+    setTimeout(() => {
+        if (movingObstacle.parentElement) {
+            movingObstacle.remove();
+        }
+    }, speed * 1000);
+}
+
+function createDoubleObstacle() {
+    if (!gameRunning) return;
+    
+    const doubleObstacle = document.createElement('div');
+    doubleObstacle.classList.add('double-obstacle');
+    
+    // Altezza aumenta con il punteggio
+    const baseHeights = [35, 55, 75];
+    const heightIncrease = Math.floor(score / 200) * 10;
+    const heights = baseHeights.map(h => h + heightIncrease);
+    const randomHeight = heights[Math.floor(Math.random() * heights.length)];
+    doubleObstacle.style.height = randomHeight + 'px';
+    
+    // Velocità dinamica basata sul punteggio
+    const baseSpeed = 1.3;
+    const speedIncrease = Math.floor(score / 100) * 0.2;
+    const speed = Math.max(1.0, baseSpeed - speedIncrease);
+    doubleObstacle.style.animationDuration = speed + 's';
+    
+    gameArea.appendChild(doubleObstacle);
+    
+    // Rimuovi ostacolo dopo l'animazione
+    setTimeout(() => {
+        if (doubleObstacle.parentElement) {
+            doubleObstacle.remove();
+        }
+    }, speed * 1000);
+}
+
 function checkCollisions() {
     const obstacles = document.querySelectorAll('.obstacle');
     const spikes = document.querySelectorAll('.platform');
     const boostPlatforms = document.querySelectorAll('.boost-platform');
+    const movingObstacles = document.querySelectorAll('.moving-obstacle');
+    const doubleObstacles = document.querySelectorAll('.double-obstacle');
     const playerRect = player.getBoundingClientRect();
     
     // Controlla collisione con ostacoli
@@ -315,6 +379,34 @@ function checkCollisions() {
             playerRect.top < boostRect.bottom
         ) {
             activateBoost(boostPlatform);
+        }
+    });
+    
+    // Controlla collisione con ostacoli mobili
+    movingObstacles.forEach(obstacle => {
+        const obstacleRect = obstacle.getBoundingClientRect();
+        
+        if (
+            playerRect.left < obstacleRect.right &&
+            playerRect.right > obstacleRect.left &&
+            playerRect.bottom > obstacleRect.top &&
+            playerRect.top < obstacleRect.bottom
+        ) {
+            endGame();
+        }
+    });
+    
+    // Controlla collisione con doppi ostacoli
+    doubleObstacles.forEach(obstacle => {
+        const obstacleRect = obstacle.getBoundingClientRect();
+        
+        if (
+            playerRect.left < obstacleRect.right &&
+            playerRect.right > obstacleRect.left &&
+            playerRect.bottom > obstacleRect.top &&
+            playerRect.top < obstacleRect.bottom
+        ) {
+            endGame();
         }
     });
     

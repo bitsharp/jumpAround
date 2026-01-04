@@ -226,6 +226,28 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
+.moving-obstacle {
+    position: absolute;
+    bottom: 100px;
+    right: -50px;
+    width: 50px;
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    animation: moveObstacle 1.3s linear forwards;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+}
+
+.double-obstacle {
+    position: absolute;
+    bottom: 100px;
+    right: -80px;
+    width: 80px;
+    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+    animation: moveObstacle 1.3s linear forwards;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    border: 3px solid #6c3483;
+}
+
 .boost-platform {
     position: absolute;
     bottom: 100px;
