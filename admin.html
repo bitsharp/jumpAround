@@ -648,6 +648,10 @@
                         <h3>Average Score</h3>
                         <div class="value" id="averageScore">0</div>
                     </div>
+                    <div class="stat-card">
+                        <h3>🎮 Active Players</h3>
+                        <div class="value" id="activePlayers">0</div>
+                    </div>
                 </div>
             </div>
 
@@ -788,6 +792,7 @@
             loginScreen.style.display = 'none';
             adminDashboard.classList.add('active');
             loadRecords();
+            loadActivePlayers();
         }
 
         function loadRecords() {
@@ -892,12 +897,24 @@
             }
         }
 
-        // Reload data every 5 seconds
+        // Funzione per caricare il numero di giocatori attivi
+        function loadActivePlayers() {
+            fetch('/api/active-players')
+                .then(response => response.json())
+                .then(data => {
+                    const activePlayers = data.count || 0;
+                    document.getElementById('activePlayers').textContent = activePlayers;
+                })
+                .catch(error => console.log('Error loading active players:', error));
+        }
+
+        // Reload data every 2 seconds for real-time updates
         setInterval(() => {
             if (sessionStorage.getItem('adminLoggedIn')) {
                 loadRecords();
+                loadActivePlayers();
             }
-        }, 5000);
+        }, 2000);
     </script>
 </body>
 </html>

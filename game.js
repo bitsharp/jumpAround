@@ -115,6 +115,10 @@ function startGameWithName() {
     
     playerName = name;
     playerNameScreen.classList.add('hidden');
+    
+    // Registra giocatore attivo
+    registerActivePlayer('start');
+    
     startGame();
 }
 
@@ -496,6 +500,9 @@ function endGame() {
     // Salva il punteggio nel database centralizzato
     saveScoreToDatabase();
     
+    // Deregistra giocatore attivo
+    registerActivePlayer('end');
+    
     // Mostra schermata game over
     gameOverPlayerNameElement.textContent = playerName;
     finalScoreElement.textContent = score;
@@ -680,6 +687,24 @@ function resetHighScore() {
         highScoreElement.textContent = 0;
         alert('Record reset!');
     }
+}
+
+// Funzione per registrare giocatore attivo
+function registerActivePlayer(action) {
+    if (!playerName) return;
+    
+    fetch('/api/active-players', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            playerName: playerName,
+            deviceType: deviceType,
+            action: action  // 'start', 'end', o 'update'
+        })
+    })
+    .catch(error => console.log('Active player registration error:', error));
 }
 
 // Previeni lo scroll della pagina con spazio
