@@ -111,17 +111,6 @@ function jump() {
     
     setTimeout(() => {
         player.classList.remove('jumping');
-        
-        // Il movimento è già stato fatto dal translateX nell'animazione
-        // Qui aggiorniamo solo la posizione left per il prossimo salto
-        const currentTransform = getComputedStyle(player).transform;
-        const translateX = new DOMMatrix(currentTransform).m41;
-        
-        playerX += translateX;
-        
-        // Resetta il transform e imposta la nuova posizione left
-        player.style.transform = 'none';
-        player.style.left = playerX + 'px';
         isJumping = false;
     }, 600);
 }
@@ -137,10 +126,10 @@ function createObstacle() {
     const randomHeight = heights[Math.floor(Math.random() * heights.length)];
     obstacle.style.height = randomHeight + 'px';
     
-    // Varia velocità basata sul punteggio
-    const baseSpeed = 3;
-    const speedIncrease = Math.floor(score / 100) * 0.5;
-    const speed = Math.max(1.5, baseSpeed - speedIncrease);
+    // Velocità dinamica basata sul punteggio
+    const baseSpeed = 1.3;
+    const speedIncrease = Math.floor(score / 100) * 0.2;
+    const speed = Math.max(1.0, baseSpeed - speedIncrease);
     obstacle.style.animationDuration = speed + 's';
     
     gameArea.appendChild(obstacle);
@@ -159,10 +148,10 @@ function createSpike() {
     const spike = document.createElement('div');
     spike.classList.add('platform');
     
-    // Varia velocità basata dal punteggio
-    const baseSpeed = 3;
-    const speedIncrease = Math.floor(score / 100) * 0.5;
-    const speed = Math.max(1.5, baseSpeed - speedIncrease);
+    // Velocità dinamica basata dal punteggio
+    const baseSpeed = 1.3;
+    const speedIncrease = Math.floor(score / 100) * 0.2;
+    const speed = Math.max(1.0, baseSpeed - speedIncrease);
     spike.style.animationDuration = speed + 's';
     
     gameArea.appendChild(spike);

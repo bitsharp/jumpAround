@@ -119,21 +119,21 @@ body {
 @keyframes jump {
     0% {
         bottom: 100px;
-        transform: translateX(0) rotate(0deg) scale(1);
+        transform: rotate(0deg) scale(1);
     }
     25% {
-        transform: translateX(35px) rotate(-8deg) scaleY(0.95) scaleX(1.05);
+        transform: rotate(-8deg) scaleY(0.95) scaleX(1.05);
     }
     50% {
         bottom: 320px;
-        transform: translateX(65px) rotate(0deg) scale(1);
+        transform: rotate(0deg) scale(1);
     }
     75% {
-        transform: translateX(90px) rotate(8deg) scaleY(0.95) scaleX(1.05);
+        transform: rotate(8deg) scaleY(0.95) scaleX(1.05);
     }
     100% {
         bottom: 100px;
-        transform: translateX(130px) rotate(0deg) scale(1);
+        transform: rotate(0deg) scale(1);
     }
 }
 
@@ -158,7 +158,7 @@ body {
     height: 60px;
     background: linear-gradient(135deg, #2d3436 0%, #000000 100%);
     border-radius: 5px;
-    animation: moveObstacle 3s linear forwards;
+    animation: moveObstacle 1.8s linear forwards;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
@@ -179,7 +179,7 @@ body {
     height: 50px;
     background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
     clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-    animation: moveObstacle 3s linear forwards;
+    animation: moveObstacle 1.8s linear forwards;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
@@ -305,33 +305,33 @@ body {
     }
     
     .obstacle {
-        width: 38px;
-        height: 55px;
+        width: 25px;
+        height: 35px;
     }
     
     .platform {
-        width: 75px;
-        height: 19px;
+        width: 40px;
+        height: 12px;
     }
     
     @keyframes jump {
         0% {
             bottom: 72px;
-            transform: translateX(0) rotate(0deg) scale(1);
+            transform: rotate(0deg) scale(1);
         }
         25% {
-            transform: translateX(45px) rotate(-8deg) scaleY(0.95) scaleX(1.05);
+            transform: rotate(-8deg) scaleY(0.95) scaleX(1.05);
         }
         50% {
             bottom: 200px;
-            transform: translateX(85px) rotate(0deg) scale(1);
+            transform: rotate(0deg) scale(1);
         }
         75% {
-            transform: translateX(125px) rotate(8deg) scaleY(0.95) scaleX(1.05);
+            transform: rotate(8deg) scaleY(0.95) scaleX(1.05);
         }
         100% {
             bottom: 72px;
-            transform: translateX(160px) rotate(0deg) scale(1);
+            transform:e(1);
         }
     }
     
