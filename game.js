@@ -9,6 +9,8 @@ let obstacleInterval;
 let scoreInterval;
 let playerX = 50;
 let jumpDistance = 130;
+let jumpBoost = 0;
+let boostDuration = 0;
 
 // Elementi DOM
 const gameArea = document.getElementById('gameArea');
@@ -63,6 +65,7 @@ function startGame() {
     
     gameRunning = true;
     score = 0;
+    jumpBoost = 0;
     playerX = 50;
     scoreElement.textContent = score;
     startBtn.classList.add('hidden');
@@ -79,14 +82,22 @@ function startGame() {
     // Rimuovi ostacoli e aculei esistenti
     document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
     document.querySelectorAll('.platform').forEach(plat => plat.remove());
+    document.querySelectorAll('.boost-platform').forEach(boost => boost.remove());
     
     // Genera stelle di sfondo
     createStars();
     
-    // Inizia a generare ostacoli
+    // Inizia a generare ostacoli con difficoltà progressiva
     obstacleInterval = setInterval(() => {
         const random = Math.random();
-        if (random > 0.5) {
+        const spawnBoost = Math.random();
+        
+        // Aumenta probabilità di spawn con il punteggio
+        const boostChance = Math.min(0.15, score / 500);
+        
+        if (spawnBoost < boostChance) {
+            createBoostPlatform();
+        } else if (random > 0.5) {
             createObstacle();
         } else {
             createSpike();
@@ -98,6 +109,11 @@ function startGame() {
         if (gameRunning) {
             score++;
             scoreElement.textContent = score;
+            
+            // Diminuisci durata del boost ogni 50 punti
+            if (score % 50 === 0 && jumpBoost > 0) {
+                boostDuration = Math.max(1, boostDuration - 0.5);
+            }
         }
     }, 100);
     
@@ -166,9 +182,32 @@ function createSpike() {
     }, speed * 1000);
 }
 
+function createBoostPlatform() {
+    if (!gameRunning) return;
+    
+    const boostPlatform = document.createElement('div');
+    boostPlatform.classList.add('boost-platform');
+    
+    // Velocità dinamica basata sul punteggio
+    const baseSpeed = 1.3;
+    const speedIncrease = Math.floor(score / 100) * 0.2;
+    const speed = Math.max(1.0, baseSpeed - speedIncrease);
+    boostPlatform.style.animationDuration = speed + 's';
+    
+    gameArea.appendChild(boostPlatform);
+    
+    // Rimuovi piattaforma dopo l'animazione
+    setTimeout(() => {
+        if (boostPlatform.parentElement) {
+            boostPlatform.remove();
+        }
+    }, speed * 1000);
+}
+
 function checkCollisions() {
     const obstacles = document.querySelectorAll('.obstacle');
     const spikes = document.querySelectorAll('.platform');
+    const boostPlatforms = document.querySelectorAll('.boost-platform');
     const playerRect = player.getBoundingClientRect();
     
     // Controlla collisione con ostacoli
@@ -198,6 +237,36 @@ function checkCollisions() {
             endGame();
         }
     });
+    
+    // Controlla collisione con piattaforme di boost
+    boostPlatforms.forEach(boostPlatform => {
+        const boostRect = boostPlatform.getBoundingClientRect();
+        
+        if (
+            playerRect.left < boostRect.right &&
+            playerRect.right > boostRect.left &&
+            playerRect.bottom > boostRect.top &&
+            playerRect.top < boostRect.bottom
+        ) {
+            activateBoost(boostPlatform);
+        }
+    });
+    
+    // Decrementare durata del boost
+    if (boostDuration > 0) {
+        boostDuration -= 0.01;
+        if (boostDuration <= 0) {
+            jumpBoost = 0;
+            player.classList.remove('boosted');
+        }
+    }
+}
+
+function activateBoost(boostPlatform) {
+    jumpBoost = 150;
+    boostDuration = 5;
+    player.classList.add('boosted');
+    boostPlatform.remove();
 }
 
 function endGame() {
@@ -208,9 +277,10 @@ function endGame() {
     clearInterval(scoreInterval);
     clearInterval(gameLoop);
     
-    // Rimuovi tutti gli ostacoli e aculei
+    // Rimuovi tutti gli ostacoli, aculei e piattaforme di boost
     document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
     document.querySelectorAll('.platform').forEach(plat => plat.remove());
+    document.querySelectorAll('.boost-platform').forEach(boost => boost.remove());
     
     // Aggiorna high score
     if (score > highScore) {
@@ -229,6 +299,9 @@ function resetGame() {
     // Reset del giocatore
     playerX = 50;
     player.style.left = '50px';
+    jumpBoost = 0;
+    boostDuration = 0;
+    player.classList.remove('boosted');
     
     // Imposta il bottom corretto in base al dispositivo
     const isMobile = window.innerWidth <= 480;
