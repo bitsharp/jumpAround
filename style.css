@@ -195,7 +195,8 @@ body {
 }
 
 .start-btn,
-.restart-btn {
+.restart-btn,
+.reset-btn {
     padding: 15px 40px;
     font-size: 1.2em;
     font-weight: bold;
@@ -205,20 +206,27 @@ body {
     border-radius: 50px;
     cursor: pointer;
     margin-top: 10px;
+    margin-right: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     transition: transform 0.2s, box-shadow 0.2s;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
 }
 
+.reset-btn {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+}
+
 .start-btn:hover,
-.restart-btn:hover {
+.restart-btn:hover,
+.reset-btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
 .start-btn:active,
-.restart-btn:active {
+.restart-btn:active,
+.reset-btn:active {
     transform: translateY(0);
 }
 

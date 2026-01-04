@@ -18,6 +18,7 @@ const highScoreElement = document.getElementById('highScore');
 const finalScoreElement = document.getElementById('finalScore');
 const startBtn = document.getElementById('startBtn');
 const restartBtn = document.getElementById('restartBtn');
+const resetBtn = document.getElementById('resetBtn');
 const gameOverDiv = document.getElementById('gameOver');
 
 // Inizializza high score
@@ -26,6 +27,7 @@ highScoreElement.textContent = highScore;
 // Eventi
 startBtn.addEventListener('click', startGame);
 restartBtn.addEventListener('click', resetGame);
+resetBtn.addEventListener('click', resetHighScore);
 
 // Controlli tastiera e mouse
 document.addEventListener('keydown', handleKeyPress);
@@ -256,6 +258,15 @@ function createStars() {
         star.style.top = Math.random() * 70 + '%';
         star.style.animationDelay = Math.random() * 2 + 's';
         gameArea.appendChild(star);
+    }
+}
+
+function resetHighScore() {
+    if (confirm('Sei sicuro di voler resettare il record?')) {
+        highScore = 0;
+        localStorage.setItem('highScore', 0);
+        highScoreElement.textContent = 0;
+        alert('Record resettato!');
     }
 }
 
