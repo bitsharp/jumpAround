@@ -91,8 +91,21 @@ module.exports = async function handler(req, res) {
 
     if (req.method === 'DELETE') {
         try {
-            await Score.deleteMany({});
-            return res.status(200).json({ success: true, message: 'All records have been deleted' });
+            const { id } = req.query;
+
+            if (id) {
+                // Cancella un singolo record per ID
+                const result = await Score.deleteOne({ _id: id });
+                if (result.deletedCount > 0) {
+                    return res.status(200).json({ success: true, message: 'Record deleted' });
+                } else {
+                    return res.status(404).json({ error: 'Record not found' });
+                }
+            } else {
+                // Cancella tutti i record
+                await Score.deleteMany({});
+                return res.status(200).json({ success: true, message: 'All records have been deleted' });
+            }
         } catch (error) {
             console.error('Error deleting records:', error);
             return res.status(500).json({ error: 'Error deleting records' });
