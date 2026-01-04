@@ -2,7 +2,8 @@
   "name": "jump-around",
   "version": "1.0.0",
   "description": "Star Wars Runner Game",
-  "main": "server.js",
+  "main": "index.html",
+  "type": "module",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"

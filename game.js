@@ -13,10 +13,8 @@ let jumpBoost = 0;
 let boostDuration = 0;
 let playerName = '';
 
-// Determina l'URL base del server
-const API_URL = window.location.hostname === 'localhost' 
-    ? 'https://jump-around.vercel.app'  
-    : window.location.origin;
+// API endpoint - usa relative path /api/scores
+const API_SCORES = '/api/scores';
 
 // Elementi DOM
 const gameArea = document.getElementById('gameArea');
@@ -84,7 +82,7 @@ function handleKeyPress(e) {
 }
 
 function loadGlobalHighScore() {
-    fetch(`${API_URL}/api/scores`)
+    fetch(API_SCORES)
         .then(response => response.json())
         .then(scores => {
             if (scores.length > 0) {
@@ -356,7 +354,7 @@ function endGame() {
 function saveScoreToDatabase() {
     if (!playerName) return;
     
-    fetch(`${API_URL}/api/scores`, {
+    fetch(API_SCORES, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -430,7 +428,7 @@ function resetGame() {
 }
 
 function showGlobalRecords() {
-    fetch(`${API_URL}/api/scores`)
+    fetch(API_SCORES)
         .then(response => response.json())
         .then(scores => {
             displayTopScores(scores);
