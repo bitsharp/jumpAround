@@ -108,11 +108,6 @@ function loadGlobalHighScore() {
         showActivePlayersDisplay();
     }
 }
-        })
-        .catch(error => {
-            console.log('Offline mode - using local records');
-        });
-}
 
 function changeCharacter(num) {
     currentCharacter = num;
