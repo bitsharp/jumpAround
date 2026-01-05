@@ -129,8 +129,10 @@ function startGameWithName() {
     playerName = name;
     playerNameScreen.classList.add('hidden');
     
-    // Registra giocatore attivo
-    registerActivePlayer('start');
+    // Registra giocatore attivo (non blocking)
+    if (playerName) {
+        registerActivePlayer('start');
+    }
     
     startGame();
 }
@@ -708,22 +710,25 @@ function resetHighScore() {
     }
 }
 
-// Funzione per registrare giocatore attivo
+// Funzione per registrare giocatore attivo (non-blocking)
 function registerActivePlayer(action) {
     if (!playerName) return;
     
-    fetch('/api/active-players', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            playerName: playerName,
-            deviceType: deviceType,
-            action: action  // 'start', 'end', o 'update'
+    // Usa setTimeout per evitare di bloccare il game loop
+    setTimeout(() => {
+        fetch('/api/active-players', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                playerName: playerName,
+                deviceType: deviceType,
+                action: action  // 'start', 'end', o 'update'
+            })
         })
-    })
-    .catch(error => console.log('Active player registration error:', error));
+        .catch(error => console.log('Active player registration error:', error));
+    }, 0);
 }
 
 // Mostra il widget dei giocatori attivi solo se admin è loggato
