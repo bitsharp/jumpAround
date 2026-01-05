@@ -103,10 +103,8 @@ function loadGlobalHighScore() {
             console.log('Offline mode - using local records');
         });
     
-    // Mostra active players se admin è loggato
-    if (sessionStorage.getItem('adminLoggedIn') === 'true') {
-        showActivePlayersDisplay();
-    }
+    // Mostra active players a tutti gli utenti
+    showActivePlayersDisplay();
 }
 
 function changeCharacter(num) {
@@ -726,22 +724,16 @@ function registerActivePlayer(action) {
     }, 0);
 }
 
-// Mostra il widget dei giocatori attivi solo se admin è loggato
+// Mostra il widget dei giocatori attivi a tutti gli utenti
 function showActivePlayersDisplay() {
-    if (sessionStorage.getItem('adminLoggedIn') === 'true') {
-        activePlayersDisplay.style.display = 'block';
-        updateActivePlayersCount();
-        
-        // Aggiorna il conteggio ogni 2 secondi
-        if (!activePlayersInterval) {
-            activePlayersInterval = setInterval(() => {
-                if (sessionStorage.getItem('adminLoggedIn') === 'true') {
-                    updateActivePlayersCount();
-                } else {
-                    hideActivePlayersDisplay();
-                }
-            }, 2000);
-        }
+    activePlayersDisplay.style.display = 'block';
+    updateActivePlayersCount();
+    
+    // Aggiorna il conteggio ogni 2 secondi
+    if (!activePlayersInterval) {
+        activePlayersInterval = setInterval(() => {
+            updateActivePlayersCount();
+        }, 2000);
     }
 }
 
@@ -756,8 +748,6 @@ function hideActivePlayersDisplay() {
 
 // Aggiorna il conteggio dei giocatori attivi
 function updateActivePlayersCount() {
-    if (sessionStorage.getItem('adminLoggedIn') !== 'true') return;
-    
     fetch('/api/active-players')
         .then(response => response.json())
         .then(data => {
