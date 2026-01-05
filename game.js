@@ -36,6 +36,8 @@ const topScoresContainer = document.getElementById('topScoresContainer');
 const topScoresBody = document.getElementById('topScoresBody');
 const activePlayersDisplay = document.getElementById('activePlayersDisplay');
 const gameActivePlayersCount = document.getElementById('gameActivePlayers');
+const activePlayersList = document.getElementById('activePlayersList');
+const activePlayersPanel = document.getElementById('activePlayersPanel');
 
 // Offline mode (localStorage) if server is not available
 let useOnlineDB = true;
@@ -752,9 +754,31 @@ function updateActivePlayersCount() {
         .then(response => response.json())
         .then(data => {
             gameActivePlayersCount.textContent = data.count || 0;
+            displayDesktopPlayers(data.players || []);
         })
         .catch(error => console.log('Error loading active players:', error));
-}// Previeni lo scroll della pagina con spazio
+}
+
+// Mostra i nomi dei giocatori desktop nel pannello sulla destra
+function displayDesktopPlayers(players) {
+    activePlayersList.innerHTML = '';
+    
+    const desktopPlayers = players.filter(p => p.deviceType === 'desktop');
+    
+    if (desktopPlayers.length === 0) {
+        activePlayersList.innerHTML = '<div style="color: #888; text-align: center; padding: 20px 0; font-size: 0.9em;">No players online</div>';
+        return;
+    }
+    
+    desktopPlayers.forEach(player => {
+        const playerItem = document.createElement('div');
+        playerItem.className = 'active-player-item';
+        playerItem.textContent = player.playerName;
+        activePlayersList.appendChild(playerItem);
+    });
+}
+
+// Previeni lo scroll della pagina con spazio
 window.addEventListener('keydown', (e) => {
     if (e.code === 'Space') {
         e.preventDefault();
